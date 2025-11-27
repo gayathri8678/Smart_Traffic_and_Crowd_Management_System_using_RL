@@ -1,16 +1,22 @@
-<<<<<<< HEAD
-
-=======
 from ultralytics import YOLO
 import cv2
 from rl_agent import RLAgent
 from reward import reward_function
+import winsound
 
 model = YOLO("yolov8n.pt")
 cap = cv2.VideoCapture(0)
 
 agent = RLAgent()
 prev_count = 0
+
+def alert_status(action):
+    if action == 1:  # Warning Level
+        print("⚠ WARNING: Crowd Density Increasing!")
+        winsound.Beep(1000, 500)   # Medium beep
+    elif action == 2:  # Emergency
+        print("🚨 EMERGENCY: OVERCROWDING DETECTED!")
+        winsound.Beep(2000, 800)   # High alert beep
 
 while True:
     ret, frame = cap.read()
@@ -27,10 +33,12 @@ while True:
                 people_count += 1
 
     # ---- RL logic ----
-  action = agent.choose_action(people_count)
+    action = agent.choose_action(people_count)
     reward = reward_function(people_count)
     agent.learn(prev_count, action, reward, people_count)
     prev_count = people_count
+
+    alert_status(action)
 
     # Show on screen
     cv2.putText(frame, f"People: {people_count}", (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)
@@ -44,13 +52,4 @@ while True:
 
 cap.release()
 cv2.destroyAllWindows()
-import winsound
 
-def alert_status(action):
-    if action == 1:  # Warning Level
-        print("⚠ WARNING: Crowd Density Increasing!")
-        winsound.Beep(1000, 500)   # Medium beep
-    elif action == 2:  # Emergency
-        print("🚨 EMERGENCY: OVERCROWDING DETECTED!")
-        winsound.Beep(2000, 800)   # High alert beep
->>>>>>> b10dd52 (added rl_agent.py,Crowd_Detection.py,Crowd_State_Logger.py,csv,json,train_rl.py,visualizee.py,yolov8n.pt)
