@@ -1,0 +1,6 @@
+models/*.pth
+*.pth
+output_videos/
+*.mp4
+*.avi
+__pycache__/
